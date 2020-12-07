@@ -103,9 +103,31 @@ uint32_t Star1(std::map<std::string, std::map<std::string, uint32_t>>* rules)
 	return shinyBagCount;
 }
 
+uint32_t CountBags(std::string bagToCheck, std::map<std::string, std::map<std::string, uint32_t>>& rules)
+{
+	uint32_t count = 0;
+
+	if (rules[bagToCheck].find("no other") != rules[bagToCheck].end())
+		return 0;
+
+	for (auto rule : rules[bagToCheck])
+	{
+		count += rule.second + rule.second * CountBags(rule.first, rules);
+	}
+
+	return count;
+}
+
 uint32_t Star2(std::map<std::string, std::map<std::string, uint32_t>>* rules)
 {
-	return 0;
+	uint32_t individualBagsCount = 0;
+
+	for (auto rule : (*rules)["shiny gold"])
+	{
+		individualBagsCount += rule.second + rule.second * CountBags(rule.first, *rules);
+	}
+
+	return individualBagsCount;
 }
 
 int main()
@@ -113,7 +135,7 @@ int main()
 	std::map<std::string, std::map<std::string, uint32_t>>* rules = LoadFile("7.txt");
 
 	std::cout << "Star1: " << Star1(rules) << std::endl;
-	//std::cout << "Star2: " << Star2(rules) << std::endl;
+	std::cout << "Star2: " << Star2(rules) << std::endl;
 
 	delete rules;
 
