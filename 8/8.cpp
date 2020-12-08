@@ -71,7 +71,7 @@ std::vector<ProgramCommand>* LoadFile(std::string fileName)
 	return program;
 }
 
-long long Star1(std::vector<ProgramCommand>& program)
+long long Star1(std::vector<ProgramCommand> program)
 {
 	long long accumulator = 0;
 
@@ -102,9 +102,60 @@ long long Star1(std::vector<ProgramCommand>& program)
 	return accumulator;
 }
 
-long long Star2(std::vector<ProgramCommand>& program)
+long long Star2(std::vector<ProgramCommand> program)
 {
-	return 0;
+	long long accumulator = 0;
+
+	for (size_t j = 0; j < program.size(); ++j)
+	{
+		if (program[j].command == nop || program[j].command == jmp)
+		{
+			bool runFailed = false;
+			accumulator = 0;
+
+			std::vector<ProgramCommand> programCopy = program;
+
+			if (program[j].value == nop)
+				programCopy[j].command = jmp;
+			else
+				programCopy[j].command = nop;
+
+			bool lastInstruction = false;
+			for (size_t i = 0; !lastInstruction && i < programCopy.size();)
+			{
+				if (programCopy[i].numOfExec > 0)
+				{
+					runFailed = true;
+					break;
+				}
+
+				if (i == programCopy.size() - 1)
+					lastInstruction = true;
+
+				++programCopy[i].numOfExec;
+				switch (programCopy[i].command)
+				{
+				case nop:
+					++i;
+					break;
+				case acc:
+					accumulator += programCopy[i].value;
+					++i;
+					break;
+				case jmp:
+					i += programCopy[i].value;
+					break;
+				default:
+					break;
+				}
+			}
+
+			if (!runFailed)
+				return accumulator;
+		}
+	}
+
+	return accumulator;
 }
 
 int main()
