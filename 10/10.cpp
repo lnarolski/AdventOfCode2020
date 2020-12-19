@@ -45,30 +45,20 @@ uint64_t Star1(std::vector<uint64_t>& outputJoltage)
     return differencesOf1Jolt * differencesOf3Jolt;
 }
 
-void CalculateCombinations(uint64_t& combinations, std::vector<uint64_t>& outputJoltage, uint64_t previous, size_t i)
-{
-    for (; i < outputJoltage.size() - 1; i++)
-    {
-        if ((outputJoltage[i] - previous == 1 && outputJoltage[i + 1] - outputJoltage[i] == 1) || (outputJoltage[i] - previous == 1 && outputJoltage[i + 1] - outputJoltage[i] == 2) || (outputJoltage[i] - previous == 2 && outputJoltage[i + 1] - outputJoltage[i] == 1))
-        {
-            CalculateCombinations(combinations, outputJoltage, previous, i + 1);
-        }
-        
-        previous = outputJoltage[i];
-    }
-    
-    combinations++;
-}
-
 uint64_t Star2(std::vector<uint64_t>& outputJoltage)
 {
-    uint64_t combinations = 0;
+    std::vector <uint64_t> possibleWays;
 
-    outputJoltage.insert(outputJoltage.begin(), 0);
-    uint64_t previous = outputJoltage[0];
-    CalculateCombinations(combinations, outputJoltage, previous, 1);
+    // Copied... :(
+    possibleWays.resize(outputJoltage.back() + 3);
 
-    return combinations;
+    possibleWays[2] = 1;
+    for (uint64_t a : outputJoltage) {
+        possibleWays[a + 2] = possibleWays[a - 1] + possibleWays[a] + possibleWays[a + 1];
+    }
+
+    return possibleWays.back();
+    //////////////////////////////////////
 }
 
 int main()
