@@ -1,3 +1,5 @@
+#define M_PI 3.14159265358979323846
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -97,9 +99,73 @@ uint64_t Star1(std::vector<std::string> instructions)
     return std::abs(shipPosition.first) + std::abs(shipPosition.second);
 }
 
-uint64_t Star2(std::vector<std::string>& instructions)
+void RotateWaypoint(std::pair <int64_t, int64_t>& shipPosition, std::pair <int64_t, int64_t>& waypoint, int64_t value)
 {
-    return 0;
+    if (value < 0)
+        value = 360 + value;
+
+    value *= -1;
+
+    switch (value)
+    {
+    case -90:
+    case -270:
+        waypoint.first -= shipPosition.first;
+        waypoint.second -= shipPosition.second;
+
+        waypoint.first = (waypoint.first * std::cos(M_PI / 180 * value)) - (waypoint.second * std::sin(M_PI / 180 * value));
+        waypoint.second = (waypoint.first * std::sin(M_PI / 180 * value)) + (waypoint.second * std::cos(M_PI / 180 * value));
+        
+        waypoint.first += shipPosition.first;
+        waypoint.second += shipPosition.second;
+        break;
+    case -180:
+        waypoint.first *= -1;
+        waypoint.second *= -1;
+        break;
+    default:
+        break;
+    }
+}
+
+uint64_t Star2(std::vector<std::string> instructions)
+{
+    std::pair <int64_t, int64_t> shipPosition = { 0, 0 };
+    std::pair <int64_t, int64_t> waypoint = { 10, 1 };
+
+    for (std::string instruction : instructions)
+    {
+        int64_t value = std::stoull(instruction.substr(1));
+
+        switch (instruction[0])
+        {
+        case 'N':
+            waypoint.second += value;
+            break;
+        case 'S':
+            waypoint.second -= value;
+            break;
+        case 'E':
+            waypoint.first += value;
+            break;
+        case 'W':
+            waypoint.first -= value;
+            break;
+        case 'L':
+            RotateWaypoint(shipPosition, waypoint, -value);
+            break;
+        case 'R':
+            RotateWaypoint(shipPosition, waypoint, value);
+            break;
+        case 'F':
+            shipPosition.first += waypoint.first * value;
+            shipPosition.second += waypoint.second * value;
+        default:
+            break;
+        }
+    }
+
+    return std::abs(shipPosition.first) + std::abs(shipPosition.second);
 }
 
 int main()
@@ -107,7 +173,7 @@ int main()
     std::vector<std::string>* instructions = LoadFile("12.txt");
 
     std::cout << "Star1: " << Star1(*instructions) << std::endl;
-    //std::cout << "Star2: " << Star2(*instructions) << std::endl;
+    std::cout << "Star2: " << Star2(*instructions) << std::endl;
 
     delete instructions;
 
