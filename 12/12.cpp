@@ -104,22 +104,15 @@ void RotateWaypoint(std::pair <int64_t, int64_t>& shipPosition, std::pair <int64
     if (value < 0)
         value = 360 + value;
 
-    int64_t temp[2];
+    int64_t temp;
 
     switch (value)
     {
     case 90:
     case 270:
-        /*waypoint.first += shipPosition.first;
-        waypoint.second += shipPosition.second;*/
-
-        temp[0] = std::round(((double)waypoint.first) * std::cos(M_PI / 180.0 * (double)value) + ((double)waypoint.second) * std::sin(M_PI / 180.0 * (double)value));
-        temp[1] = std::round(((double)waypoint.second) * std::cos(M_PI / 180.0 * (double)value) - ((double)waypoint.first) * std::sin(M_PI / 180.0 * (double)value));
-        waypoint.first = temp[0];
-        waypoint.second = temp[1];
-
-        /*waypoint.first -= shipPosition.first;
-        waypoint.second -= shipPosition.second;*/
+        temp = std::round(((double)waypoint.first) * std::cos(M_PI / 180.0 * (double)value) + ((double)waypoint.second) * std::sin(M_PI / 180.0 * (double)value));
+        waypoint.second = std::round(((double)waypoint.second) * std::cos(M_PI / 180.0 * (double)value) - ((double)waypoint.first) * std::sin(M_PI / 180.0 * (double)value));
+        waypoint.first = temp;
         break;
     case 180:
         waypoint.first *= -1;
