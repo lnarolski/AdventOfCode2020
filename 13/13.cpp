@@ -72,7 +72,58 @@ uint64_t Star1(std::vector<std::string> instructions)
 
 uint64_t Star2(std::vector<std::string> instructions)
 {
-    return 0;
+    std::vector<std::string> ids = split(instructions[1], ",");
+    std::vector<uint64_t> delays, idsUint;
+
+    uint64_t delay = 0, highestId = 0;
+    size_t highestI = 0;
+
+    for (auto i : ids)
+    {
+        if (i == "x")
+        {
+            delay++;
+        }
+        else
+        {
+            delays.push_back(delay);
+
+            idsUint.push_back(std::stoull(i));
+            if (idsUint.back() > highestId)
+            {
+                highestId = idsUint.back();
+                highestI = idsUint.size() - 1;
+            }
+
+            delay++;
+        }
+    }
+
+    bool offsetFound;
+    uint64_t offsetToCheck = 0, offsetToReturn = 0;
+    offsetToCheck += highestId;
+    do
+    {
+        offsetFound = true;
+
+        uint64_t tempOffset = offsetToCheck - delays[highestI];
+
+        for (size_t i = 0; i < idsUint.size(); ++i)
+        {
+            if ((((tempOffset + delays[i]) % idsUint[i])) != 0)
+            {
+                offsetFound = false;
+                break;
+            }
+        }
+
+        if (!offsetFound)
+            offsetToCheck += highestId;
+        else
+            offsetToReturn = tempOffset;
+    } while (!offsetFound);
+
+    return offsetToReturn;
 }
 
 int main()
