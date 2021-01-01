@@ -108,7 +108,7 @@ uint64_t Star2(std::vector<std::string> instructions)
 
     lastNumber = stoull(temp[temp.size() - 1]);
 
-    while (turn != 2020)
+    while (turn != 30000000)
     {
         if (numbers.find(lastNumber) != numbers.end())
         {
