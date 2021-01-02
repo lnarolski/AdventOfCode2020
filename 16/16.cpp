@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <algorithm>
+#include <numeric>
 
 std::vector<std::string>* LoadFile(std::string fileName)
 {
@@ -37,9 +37,89 @@ std::vector<std::string> split(const std::string& str, const std::string& delim)
     return tokens;
 }
 
+struct Rule
+{
+    std::string name;
+    std::vector<uint64_t> ruleMin;
+    std::vector<uint64_t> ruleMax;
+};
+
 uint64_t Star1(std::vector<std::string> instructions)
 {
-    return 0;
+    bool rulesLoading = true, yourTicket = false, nearbyTickets = false;
+    std::vector<Rule> rules;
+    std::vector<uint64_t> invalidValues;
+
+    for (std::string line : instructions)
+    {
+        if (line == "")
+        {
+            rulesLoading = false;
+            yourTicket = false;
+            nearbyTickets = false;
+        }
+        else if (rulesLoading)
+        {
+            Rule tempRule;
+            std::vector<std::string> tempSplit = split(line, ": ");
+
+            tempRule.name = tempSplit[0];
+
+            tempSplit = split(tempSplit[1], " or ");
+            for (auto i : tempSplit)
+            {
+                std::vector<std::string> tempRange = split(i, "-");
+                tempRule.ruleMin.push_back(stoull(tempRange[0]));
+                tempRule.ruleMax.push_back(stoull(tempRange[1]));
+            }
+
+            rules.push_back(tempRule);
+        }
+        else if (!rulesLoading && !yourTicket && !nearbyTickets && line == "your ticket:")
+        {
+            yourTicket = true;
+        }
+        else if (yourTicket)
+        {
+
+        }
+        else if (line == "nearby tickets:")
+        {
+            nearbyTickets = true;
+        }
+        else if (nearbyTickets)
+        {
+            std::vector<std::string> valuesToCheck = split(line, ",");
+
+            for (auto i : valuesToCheck)
+            {
+                uint64_t valueToCheck = stoull(i);
+                bool valid = false;
+
+                for (Rule rule : rules)
+                {
+                    for (size_t ii = 0; ii < rule.ruleMin.size(); ++ii)
+                    {
+                        if (valueToCheck >= rule.ruleMin[ii] && valueToCheck <= rule.ruleMax[ii])
+                        {
+                            valid = true;
+                            break;
+                        }
+                    }
+
+                    if (valid)
+                        break;
+                }
+
+                if (!valid)
+                {
+                    invalidValues.push_back(valueToCheck);
+                }
+            }
+        }
+    }
+
+    return std::accumulate(invalidValues.begin(), invalidValues.end(), 0);
 }
 
 uint64_t Star2(std::vector<std::string> instructions)
