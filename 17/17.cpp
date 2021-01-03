@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <numeric>
+#include <list>
 
 std::vector<std::string>* LoadFile(std::string fileName)
 {
@@ -21,8 +22,22 @@ std::vector<std::string>* LoadFile(std::string fileName)
     return data;
 }
 
+class ThreeDimensionalArea
+{
+public:
+    std::vector<std::string> layer;
+    std::list<std::vector<std::string>>* nextLayer = NULL;
+    std::list<std::vector<std::string>>* previousLayer = NULL;
+
+
+};
+
 uint64_t Star1(std::vector<std::string> area)
 {
+    std::list<std::vector<std::string>> threeDimensionalArea;
+
+
+
     return 0;
 }
 
