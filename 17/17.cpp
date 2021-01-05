@@ -80,10 +80,10 @@ uint64_t Star1(std::vector<std::string> area)
     // First layer initialisation
     size_t start = (firstLayer->size / 2) - 1 - (area[0].size() / 2);
     size_t i = 0;
-    for (size_t y = start; y < start + 3; ++y)
+    for (size_t y = start; y < start + area.size(); ++y)
     {
         size_t j = 0;
-        for (size_t x = start; x < start + 3; ++x)
+        for (size_t x = start; x < start + area[0].size(); ++x)
         {
             firstLayer->layer[y][x] = area[i][j];
 
