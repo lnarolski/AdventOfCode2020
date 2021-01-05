@@ -35,7 +35,7 @@ public:
     {
         for (size_t i = 0; i < size; ++i)
         {
-            layer.push_back(std::string(100, '.'));
+            layer.push_back(std::string(size, '.'));
         }
     }
 };
@@ -99,15 +99,24 @@ uint64_t Star1(std::vector<std::string> area)
         ThreeDimensionalArea* newFirstLayer;
         ThreeDimensionalArea* newTempLayer = new ThreeDimensionalArea();
         newFirstLayer = newTempLayer;
-        newFirstLayer->previousLayer = new ThreeDimensionalArea();
-        newFirstLayer->previousLayer->nextLayer = newFirstLayer;
+
+        firstLayer->previousLayer = new ThreeDimensionalArea();
+        firstLayer->previousLayer->nextLayer = firstLayer;
+        firstLayer = firstLayer->previousLayer;
 
         ThreeDimensionalArea* actualLayer = firstLayer;
 
-        bool stop = false;
+        bool stop = false, stopping = false;
         do
         {
-            if (actualLayer->nextLayer == 0)
+            if (!stopping && actualLayer->nextLayer == 0)
+            {
+                actualLayer->nextLayer = new ThreeDimensionalArea();
+                actualLayer->nextLayer->previousLayer = actualLayer;
+
+                stopping = true;
+            }
+            else if (stopping)
             {
                 stop = true;
             }
@@ -130,7 +139,7 @@ uint64_t Star1(std::vector<std::string> area)
                         }
                     }
 
-                    if (actualLayer->previousLayer != NULL)
+                    if (actualLayer->previousLayer != 0)
                     {
                         for (size_t i = y - 1; i <= y + 1; ++i)
                         {
@@ -141,7 +150,7 @@ uint64_t Star1(std::vector<std::string> area)
                             }
                         }
                     }
-                    if (actualLayer->nextLayer != NULL)
+                    if (actualLayer->nextLayer != 0)
                     {
                         for (size_t i = y - 1; i <= y + 1; ++i)
                         {
@@ -153,26 +162,26 @@ uint64_t Star1(std::vector<std::string> area)
                         }
                     }
 
-                    if (actualLayer->layer[x][y] == '#')
+                    if (actualLayer->layer[y][x] == '#')
                     {
                         if (activeNeighborsCount == 2 || activeNeighborsCount == 3)
                         {
-                            newTempLayer->layer[x][y] = '#';
+                            newTempLayer->layer[y][x] = '#';
                         }
                         else
                         {
-                            newTempLayer->layer[x][y] = '.';
+                            newTempLayer->layer[y][x] = '.';
                         }
                     }
                     else
                     {
                         if (activeNeighborsCount == 3)
                         {
-                            newTempLayer->layer[x][y] = '#';
+                            newTempLayer->layer[y][x] = '#';
                         }
                         else
                         {
-                            newTempLayer->layer[x][y] = '.';
+                            newTempLayer->layer[y][x] = '.';
                         }
                     }
                 }
@@ -182,10 +191,12 @@ uint64_t Star1(std::vector<std::string> area)
             newTempLayer->nextLayer = new ThreeDimensionalArea();
             newTempLayer->nextLayer->previousLayer = newTempLayer;
             newTempLayer = newTempLayer->nextLayer;
+
+
         } while (!stop);
 
         DeleteOldLayers(firstLayer);
-        firstLayer = newFirstLayer->previousLayer;
+        firstLayer = newFirstLayer;
 
         ++cycle;
     }
